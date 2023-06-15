@@ -7,7 +7,8 @@ const Wallet = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const provider = new ethers.JsonRpcProvider('https://eth-mainnet.alchemyapi.io/v2/hJ1r6qGO2qfTbEeuGb-i8GT6ljgksCDh');
+      const url = process.env.REACT_APP_RPC_URL
+      const provider = new ethers.JsonRpcProvider(url);
       const balance = await provider.getBalance(address);
       const transactionHashes = [
         '0x1eb6aab282d701d3d2eeb762bd426df625767e68ebf9c00b484905be1343304e',
