@@ -1,46 +1,73 @@
-import { ethers } from "ethers";
-import React, { useEffect, useState } from 'react';
-const address = '0x33b8287511ac7F003902e83D642Be4603afCd876';
+import React from 'react';
+import {
+  ethAddress,
+  transactionHashes,
+  usdcAddress,
+  usdtAddress,
+} from './addresses';
+import { useWalletData } from './Hook';
+
 const Wallet = () => {
-  const [balance, setBalance] = useState('');
-  const [transactions, setTransactions] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const url = process.env.REACT_APP_RPC_URL
-      const provider = new ethers.JsonRpcProvider(url);
-      const balance = await provider.getBalance(address);
-      const transactionHashes = [
-        '0x1eb6aab282d701d3d2eeb762bd426df625767e68ebf9c00b484905be1343304e',
-        '0xf134054861dccf1f211e6fd92808475b2fb290489a4e41bc008260d8cc58b9f9'
-      ];
-      const transactions = await Promise.all(transactionHashes.map(async (hash) => {
-        return provider.getTransaction(hash);
-      }));
-
-      setBalance(ethers.formatEther(balance));
-      setTransactions(transactions);
-    };
-
-    fetchData();
-  }, []);
+  const { ethBalance, usdcBalance, usdtBalance, transactions } = useWalletData(
+    ethAddress,
+    transactionHashes,
+    usdcAddress,
+    usdtAddress
+  );
 
   return (
-    <div>
-      <h2>Wallet Information</h2>
-      <p>Address: {address}</p>
-      <p>Balance: {balance} ETH</p>
-
-      <h2>Transaction History</h2>
-      {transactions.map((transaction) => (
-        <div key={transaction.hash}>
-          <p>Transaction Hash: {transaction.hash}</p>
-          <p>Block Number: {transaction.blockNumber}</p>
-          <p>From Address: {transaction.from}</p>
-          <p>To Address: {transaction.to}</p>
-          <hr />
+    <div className="w-[600px]">
+      <div className="font-bold mt-10 mb-2">Account Info</div>
+      <div className="flex flex-col p-10 gap-4 bg-zinc-200">
+        <div className="flex justify-between p-4 bg-white">
+          <p>Account Address</p>
+          <p>{ethAddress.slice(0, 6) + '...' + ethAddress.slice(-7)}</p>
         </div>
-      ))}
+        <div className="flex justify-between p-4 bg-white">
+          <p>ETH Balance</p>
+          <p>{ethBalance} ETH</p>
+        </div>
+      </div>
+
+      <div className="font-bold mt-10 mb-2">Transactions</div>
+      <div className="flex flex-col p-10 gap-4 bg-zinc-200">
+        <div className="flex justify-between px-4">
+          <p>TX Hash</p>
+          <p>Block</p>
+        </div>
+        {transactions.map((transaction) => (
+          <div className="flex flex-col p-4 bg-white" key={transaction.hash}>
+            <div className="flex justify-between">
+              <p>
+                {transaction.hash.slice(0, 6) +
+                  '...' +
+                  transaction.hash.slice(-7)}
+              </p>
+              <p>{transaction.blockNumber}</p>
+            </div>
+            <hr className="my-2 border-2" />
+            <div className="flex pb-2">
+              <span className="flex pr-2 text-sm self-end">From:</span>{' '}
+              {transaction.from}
+            </div>
+            <div className="flex pb-2">
+              <span className="flex pr-2 text-sm self-end">To:</span>{' '}
+              {transaction.to}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="font-bold mt-10 mb-2">Token Holdings</div>
+      <div className="flex flex-col p-10 gap-4 bg-zinc-200">
+        <div className="flex justify-between p-4 bg-white">
+          <p>USDC Balance</p>
+          <p>{usdcBalance} USDC</p>
+        </div>
+        <div className="flex justify-between p-4 bg-white">
+          <p>USDT Balance</p>
+          <p>{usdtBalance} USDT</p>
+        </div>
+      </div>
     </div>
   );
 };

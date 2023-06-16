@@ -1,10 +1,9 @@
-import './App.css';
-import Wallet from './components/Wallet';
+import "./App.css";
+import Wallet from "./components/Wallet";
 
 function App() {
   return (
-    <div className="text-3xl font-bold underline">
-      <h1>Hello world!</h1>
+    <div className="flex justify-center width-full">
       <Wallet />
     </div>
   );
